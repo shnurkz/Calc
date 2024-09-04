@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 
@@ -6,37 +6,38 @@ namespace Calc
 {
     public partial class MainForm : MetroFramework.Forms.MetroForm
     {
-        // Приватные поля
+        // РџСЂРёРІР°С‚РЅС‹Рµ РїРѕР»СЏ
         private int accountRowIndex = 0;
         private List<Control> accountControls = new List<Control>();
         private DatabaseHelper dbHelper;
 
-        // Конструктор
+        // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
         public MainForm()
         {
             InitializeComponent();
-            string databasePath = "accounts.db"; // Укажите путь к вашей базе данных
+            string databasePath = "accounts.db"; // РЈРєР°Р¶РёС‚Рµ РїСѓС‚СЊ Рє РІР°С€РµР№ Р±Р°Р·Рµ РґР°РЅРЅС‹С…
             dbHelper = new DatabaseHelper(databasePath);
             LoadAccountsFromDatabase();
         }
 
-        // Обработчик события нажатия кнопки создания счета
+        // РћР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР±С‹С‚РёСЏ РЅР°Р¶Р°С‚РёСЏ РєРЅРѕРїРєРё СЃРѕР·РґР°РЅРёСЏ СЃС‡РµС‚Р°
         private void button1_Click(object sender, EventArgs e)
         {
             var createAccountsForm = new createAccounts(this);
             createAccountsForm.Show();
         }
 
-        // Метод для добавления строки счета
+        // РњРµС‚РѕРґ РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ СЃС‚СЂРѕРєРё СЃС‡РµС‚Р°
         public void AddAccountRow(string accountName, double value1 = 0, double value2 = 0, double balance = 0)
         {
             if (dbHelper.AccountExists(accountName))
             {
-                MessageBox.Show("Счет с таким именем уже существует.");
+                MessageBox.Show("РЎС‡РµС‚ СЃ С‚Р°РєРёРј РёРјРµРЅРµРј СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓРµС‚.");
                 return;
             }
 
             AddAccountRowToInterface(accountName, value1, value2, balance);
+
 
             try
             {
@@ -44,14 +45,14 @@ namespace Calc
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при добавлении счета: {ex.Message}");
+                MessageBox.Show($"РћС€РёР±РєР° РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё СЃС‡РµС‚Р°: {ex.Message}");
             }
         }
 
-        // Метод для добавления строки счета в интерфейс
+        // РњРµС‚РѕРґ РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ СЃС‚СЂРѕРєРё СЃС‡РµС‚Р° РІ РёРЅС‚РµСЂС„РµР№СЃ
         public void AddAccountRowToInterface(string accountName, double value1 = 0, double value2 = 0, double balance = 0)
         {
-            int yOffset = 30 * accountRowIndex + 90; // Смещение по Y для новой строки
+            int yOffset = 30 * accountRowIndex + 90; // РЎРјРµС‰РµРЅРёРµ РїРѕ Y РґР»СЏ РЅРѕРІРѕР№ СЃС‚СЂРѕРєРё
 
             Label accountLabel = new Label
             {
@@ -74,19 +75,21 @@ namespace Calc
 
             TextBox textBox2 = new TextBox
             {
-                Location = new System.Drawing.Point(300, yOffset), // Увеличьте значение X для увеличения расстояния
+                Name = "textBox2", // РџСЂРёСЃРІР°РёРІР°РµРј РёРјСЏ
+                Location = new System.Drawing.Point(300, yOffset), // РЈРІРµР»РёС‡СЊС‚Рµ Р·РЅР°С‡РµРЅРёРµ X РґР»СЏ СѓРІРµР»РёС‡РµРЅРёСЏ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ
                 Width = 100,
                 Text = value2.ToString()
             };
             textBox2.KeyPress += TextBox_KeyPress;
+            textBox2.KeyDown += TextBox2_KeyDown;
             this.Controls.Add(textBox2);
             accountControls.Add(textBox2);
 
             Label balanceLabel = new Label
             {
-                Location = new System.Drawing.Point(450, yOffset), // Увеличьте значение X для увеличения расстояния
+                Location = new System.Drawing.Point(450, yOffset), // РЈРІРµР»РёС‡СЊС‚Рµ Р·РЅР°С‡РµРЅРёРµ X РґР»СЏ СѓРІРµР»РёС‡РµРЅРёСЏ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ
                 AutoSize = true,
-                Text = balance.ToString()
+                Text = balance.ToString() + " в‚ё" // Р”РѕР±Р°РІР»СЏРµРј Р·РЅР°Рє С‚РµРЅРіРµ
             };
             this.Controls.Add(balanceLabel);
             accountControls.Add(balanceLabel);
@@ -97,39 +100,48 @@ namespace Calc
             accountRowIndex++;
         }
 
-        // Обработчик события нажатия клавиши в текстовом поле
+        // РћР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР±С‹С‚РёСЏ РЅР°Р¶Р°С‚РёСЏ РєР»Р°РІРёС€Рё РІ С‚РµРєСЃС‚РѕРІРѕРј РїРѕР»Рµ
         private void TextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Разрешить только цифры и управляющие символы
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            TextBox textBox = sender as TextBox;
+            if (textBox != null && textBox.Name == "textBox2")
             {
-                e.Handled = true;
+                // Р Р°Р·СЂРµС€РёС‚СЊ Р»СЋР±С‹Рµ СЃРёРјРІРѕР»С‹ РґР»СЏ textBox2
+                return;
+            }
+            else
+            {
+                // Р Р°Р·СЂРµС€РёС‚СЊ С‚РѕР»СЊРєРѕ С†РёС„СЂС‹ Рё СѓРїСЂР°РІР»СЏСЋС‰РёРµ СЃРёРјРІРѕР»С‹ РґР»СЏ РґСЂСѓРіРёС… С‚РµРєСЃС‚РѕРІС‹С… РїРѕР»РµР№
+                if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+                {
+                    e.Handled = true;
+                }
             }
         }
 
-        // Метод для обновления баланса
+        // РњРµС‚РѕРґ РґР»СЏ РѕР±РЅРѕРІР»РµРЅРёСЏ Р±Р°Р»Р°РЅСЃР°
         private void UpdateBalance(TextBox textBox1, TextBox textBox2, Label balanceLabel)
         {
             if (double.TryParse(textBox1.Text, out double value1) && double.TryParse(textBox2.Text, out double value2))
             {
-                balanceLabel.Text = (value2 - value1).ToString();
+                balanceLabel.Text = (value2 - value1).ToString() + " в‚ё";
                 string accountName = ((Label)accountControls[accountControls.IndexOf(balanceLabel) - 3]).Text;
                 dbHelper.UpdateAccount(accountName, accountName, value1, value2, value2 - value1);
             }
             else
             {
-                balanceLabel.Text = "Ошибка";
+                balanceLabel.Text = "РћС€РёР±РєР°";
             }
         }
 
-        // Обработчик события нажатия кнопки удаления счета
+        // РћР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР±С‹С‚РёСЏ РЅР°Р¶Р°С‚РёСЏ РєРЅРѕРїРєРё СѓРґР°Р»РµРЅРёСЏ СЃС‡РµС‚Р°
         private void button2_Click(object sender, EventArgs e)
         {
             var deleteAccountsForm = new deleteAccounts(this);
             deleteAccountsForm.Show();
         }
 
-        // Метод для получения имен счетов
+        // РњРµС‚РѕРґ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РёРјРµРЅ СЃС‡РµС‚РѕРІ
         public List<string> GetAccountNames()
         {
             List<string> accountNames = new List<string>();
@@ -143,7 +155,7 @@ namespace Calc
             return accountNames;
         }
 
-        // Метод для удаления счета
+        // РњРµС‚РѕРґ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ СЃС‡РµС‚Р°
         public void DeleteAccount(string accountName)
         {
             for (int i = 0; i < accountControls.Count; i++)
@@ -163,7 +175,7 @@ namespace Calc
             }
         }
 
-        // Метод для переупорядочивания счетов
+        // РњРµС‚РѕРґ РґР»СЏ РїРµСЂРµСѓРїРѕСЂСЏРґРѕС‡РёРІР°РЅРёСЏ СЃС‡РµС‚РѕРІ
         private void RepositionAccounts(int startIndex)
         {
             for (int i = startIndex; i < accountControls.Count; i += 4)
@@ -176,7 +188,7 @@ namespace Calc
             }
         }
 
-        // Метод для переименования счета
+        // РњРµС‚РѕРґ РґР»СЏ РїРµСЂРµРёРјРµРЅРѕРІР°РЅРёСЏ СЃС‡РµС‚Р°
         public void RenameAccount(string oldName, string newName)
         {
             foreach (var control in accountControls)
@@ -190,13 +202,47 @@ namespace Calc
             }
         }
 
-        // Метод для загрузки счетов из базы данных
+        // РњРµС‚РѕРґ РґР»СЏ Р·Р°РіСЂСѓР·РєРё СЃС‡РµС‚РѕРІ РёР· Р±Р°Р·С‹ РґР°РЅРЅС‹С…
         private void LoadAccountsFromDatabase()
         {
             var accounts = dbHelper.GetAccounts();
             foreach (var account in accounts)
             {
                 AddAccountRowToInterface(account.Name, account.Value1, account.Value2, account.Balance);
+            }
+        }
+
+        private double EvaluateExpression(string expression)
+        {
+            try
+            {
+                var dataTable = new System.Data.DataTable();
+                var value = dataTable.Compute(expression.Substring(1), "");
+                return Convert.ToDouble(value);
+            }
+            catch
+            {
+                throw new ArgumentException("РќРµРІРµСЂРЅРѕРµ РІС‹СЂР°Р¶РµРЅРёРµ");
+            }
+        }
+
+        private void TextBox2_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                TextBox textBox = sender as TextBox;
+                if (textBox != null && textBox.Text.StartsWith("="))
+                {
+                    try
+                    {
+                        double result = EvaluateExpression(textBox.Text);
+                        textBox.Text = result.ToString();
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                }
             }
         }
     }
